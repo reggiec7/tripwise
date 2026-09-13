@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { ItemKind, Trip, TripItem } from '../types'
 import { dayKey, daysUntil, formatDay, formatMoney } from '../format'
 import { ItemForm } from './ItemForm'
 import { TripItemCard } from './TripItemCard'
-import { Plane, Hotel, Ticket, ArrowLeft, Plus } from 'lucide-react'
+import { Plane, Hotel, Ticket, ArrowLeft, Plus, Wand2, Loader2 } from 'lucide-react'
+import { parseTravelDocument } from '../ai'
+import { emptyItem } from '../types'
 
 interface Props {
   trip: Trip
@@ -23,6 +25,26 @@ export const TripDetail = ({ trip, onBack, onChange }: Props) => {
   const [adding, setAdding] = useState<ItemKind | null>(null)
   const [editing, setEditing] = useState<TripItem | null>(null)
   const [filter, setFilter] = useState<ItemKind | 'all'>('all')
+  const [isAiLoading, setIsAiLoading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleAiImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = '' // reset input
+
+    setIsAiLoading(true)
+    try {
+      const extractedData = await parseTravelDocument(file)
+      const kind = (extractedData.kind as ItemKind) || 'flight'
+      const newItem = { ...emptyItem(kind), ...extractedData }
+      setEditing(newItem as TripItem)
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "An error occurred during AI import.")
+    } finally {
+      setIsAiLoading(false)
+    }
+  }
 
   const visible = useMemo(
     () =>
@@ -118,6 +140,23 @@ export const TripDetail = ({ trip, onBack, onChange }: Props) => {
             <Plus size={16} /> {kind}
           </button>
         ))}
+
+        <button
+          className="flex items-center gap-1.5 bg-purple-500 border-purple-500 text-white font-semibold px-3 py-1.5 rounded-lg border hover:bg-purple-600 transition-colors ml-2 disabled:opacity-50"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isAiLoading}
+        >
+          {isAiLoading ? <Loader2 size={16} className="animate-spin" /> : <Wand2 size={16} />}
+          Auto-import (AI)
+        </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          accept="image/*,application/pdf"
+          onChange={handleAiImport}
+        />
+
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value as ItemKind | 'all')}
