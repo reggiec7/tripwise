@@ -42,10 +42,17 @@ export const TripDetail = ({ trip, onBack, onChange }: Props) => {
     return [...groups.entries()]
   }, [visible])
 
-  const spent = trip.items
-    .filter((item) => item.status !== 'cancelled')
-    .reduce((sum, item) => sum + (item.cost || 0), 0)
-  const pending = trip.items.filter((item) => item.status === 'pending').length
+  const spent = useMemo(
+    () =>
+      trip.items
+        .filter((item) => item.status !== 'cancelled')
+        .reduce((sum, item) => sum + (item.cost || 0), 0),
+    [trip.items],
+  )
+  const pending = useMemo(
+    () => trip.items.filter((item) => item.status === 'pending').length,
+    [trip.items],
+  )
   const countdown = daysUntil(trip.start)
 
   const upsert = (item: TripItem) => {
