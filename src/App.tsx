@@ -33,11 +33,15 @@ function App() {
   )
 
   const upsert = (trip: Trip) => {
-    setTrips((prev) =>
-      prev.some((existing) => existing.id === trip.id)
-        ? prev.map((existing) => (existing.id === trip.id ? trip : existing))
-        : [...prev, trip],
-    )
+    setTrips((prev) => {
+      const index = prev.findIndex((existing) => existing.id === trip.id)
+      if (index !== -1) {
+        const next = [...prev]
+        next[index] = trip
+        return next
+      }
+      return [...prev, trip]
+    })
     setCreating(false)
     setEditing(null)
   }
