@@ -78,3 +78,49 @@ export const emptyTrip = (): Trip => ({
   budget: 0,
   items: [],
 })
+
+export const isValidTripItem = (item: any): item is TripItem => {
+  if (!item || typeof item !== 'object') return false;
+  if (typeof item.id !== 'string') return false;
+  if (typeof item.title !== 'string') return false;
+  if (typeof item.start !== 'string') return false;
+  if (typeof item.end !== 'string') return false;
+  if (typeof item.confirmation !== 'string') return false;
+  if (typeof item.cost !== 'number') return false;
+  if (typeof item.notes !== 'string') return false;
+  if (!['confirmed', 'pending', 'cancelled'].includes(item.status)) return false;
+
+  if (item.kind === 'flight') {
+    return (
+      typeof item.airline === 'string' &&
+      typeof item.flightNumber === 'string' &&
+      typeof item.from === 'string' &&
+      typeof item.to === 'string' &&
+      typeof item.seat === 'string'
+    );
+  }
+
+  if (item.kind === 'hotel') {
+    return typeof item.address === 'string' && typeof item.roomType === 'string';
+  }
+
+  if (item.kind === 'activity') {
+    return typeof item.location === 'string' && typeof item.category === 'string';
+  }
+
+  return false;
+};
+
+export const isValidTrip = (trip: any): trip is Trip => {
+  if (!trip || typeof trip !== 'object') return false;
+  if (typeof trip.id !== 'string') return false;
+  if (typeof trip.name !== 'string') return false;
+  if (typeof trip.destination !== 'string') return false;
+  if (typeof trip.start !== 'string') return false;
+  if (typeof trip.end !== 'string') return false;
+  if (typeof trip.travelers !== 'string') return false;
+  if (typeof trip.budget !== 'number') return false;
+  if (!Array.isArray(trip.items)) return false;
+
+  return trip.items.every(isValidTripItem);
+};

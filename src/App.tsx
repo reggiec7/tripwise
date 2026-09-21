@@ -3,6 +3,7 @@ import './App.css'
 import type { Trip } from './types'
 import { loadTrips, saveTrips } from './storage'
 import { tripStatus } from './format'
+import { isValidTrip } from './types'
 import { TripForm } from './components/TripForm'
 import { TripDetail } from './components/TripDetail'
 import { TripCard } from './components/TripCard'
@@ -55,7 +56,14 @@ function App() {
   const importTrips = async (file: File) => {
     try {
       const parsed: unknown = JSON.parse(await file.text())
-      if (Array.isArray(parsed)) setTrips(parsed as Trip[])
+      if (Array.isArray(parsed)) {
+        const validTrips = parsed.filter(isValidTrip)
+        if (validTrips.length === 0 && parsed.length > 0) {
+          alert('No valid trips found in that file.')
+        } else {
+          setTrips(validTrips)
+        }
+      }
     } catch {
       alert('That file could not be read as TripWise data.')
     }

@@ -1,4 +1,5 @@
 import type { Trip } from './types'
+import { isValidTrip } from './types'
 
 const KEY = 'tripwise.trips.v1'
 
@@ -7,7 +8,7 @@ export const loadTrips = (): Trip[] => {
     const raw = localStorage.getItem(KEY)
     if (!raw) return []
     const parsed: unknown = JSON.parse(raw)
-    return Array.isArray(parsed) ? (parsed as Trip[]) : []
+    return Array.isArray(parsed) ? parsed.filter(isValidTrip) : []
   } catch {
     return []
   }
