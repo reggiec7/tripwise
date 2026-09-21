@@ -34,12 +34,13 @@ export const TripDetail = ({ trip, onBack, onChange }: Props) => {
   )
 
   const days = useMemo(() => {
-    const groups = new Map<string, TripItem[]>()
-    for (const item of visible) {
+    const groups = visible.reduce((acc, item) => {
       const key = dayKey(item.start)
-      groups.set(key, [...(groups.get(key) ?? []), item])
-    }
-    return [...groups.entries()]
+      if (!acc.has(key)) acc.set(key, [])
+      acc.get(key)!.push(item)
+      return acc
+    }, new Map<string, TripItem[]>())
+    return Array.from(groups.entries())
   }, [visible])
 
   const spent = trip.items
