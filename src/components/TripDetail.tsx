@@ -42,10 +42,24 @@ export const TripDetail = ({ trip, onBack, onChange }: Props) => {
     return [...groups.entries()]
   }, [visible])
 
-  const spent = trip.items
-    .filter((item) => item.status !== 'cancelled')
-    .reduce((sum, item) => sum + (item.cost || 0), 0)
-  const pending = trip.items.filter((item) => item.status === 'pending').length
+  const stats = useMemo(() => {
+    let spent = 0
+    let pending = 0
+    const counts: Record<ItemKind, number> = { flight: 0, hotel: 0, activity: 0 }
+
+    for (const item of trip.items) {
+      if (item.status !== 'cancelled') {
+        spent += item.cost || 0
+      }
+      if (item.status === 'pending') {
+        pending++
+      }
+      counts[item.kind]++
+    }
+
+    return { spent, pending, counts }
+  }, [trip.items])
+
   const countdown = daysUntil(trip.start)
 
   const upsert = (item: TripItem) => {
@@ -90,20 +104,20 @@ export const TripDetail = ({ trip, onBack, onChange }: Props) => {
       <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-3 mb-6">
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col gap-1">
           <span className="text-slate-400 text-sm">Booked</span>
-          <strong className="text-[1.4rem] leading-tight">{formatMoney(spent)}</strong>
+          <strong className="text-[1.4rem] leading-tight">{formatMoney(stats.spent)}</strong>
           {trip.budget > 0 && <span className="text-slate-400 text-sm">of {formatMoney(trip.budget)} budget</span>}
         </div>
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col gap-1">
           <span className="text-slate-400 text-sm">Bookings</span>
           <strong className="text-[1.4rem] leading-tight">{trip.items.length}</strong>
-          <span className="text-slate-400 text-sm">{pending} pending</span>
+          <span className="text-slate-400 text-sm">{stats.pending} pending</span>
         </div>
         {kinds.map((kind) => (
           <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col gap-1" key={kind}>
             <span className="text-slate-400 text-sm flex items-center gap-1.5 capitalize">
               {icons[kind]} {plural[kind]}
             </span>
-            <strong className="text-[1.4rem] leading-tight">{trip.items.filter((item) => item.kind === kind).length}</strong>
+            <strong className="text-[1.4rem] leading-tight">{stats.counts[kind]}</strong>
           </div>
         ))}
       </div>
