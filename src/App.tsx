@@ -10,6 +10,11 @@ import { Plus, Download, Upload } from 'lucide-react'
 
 const order = { active: 0, upcoming: 1, past: 2 }
 
+function compareTrips(a: Trip, b: Trip) {
+  const byStatus = order[tripStatus(a.start, a.end)] - order[tripStatus(b.start, b.end)]
+  return byStatus !== 0 ? byStatus : a.start.localeCompare(b.start)
+}
+
 function App() {
   const [trips, setTrips] = useState<Trip[]>(loadTrips)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -23,14 +28,7 @@ function App() {
 
   const selected = trips.find((trip) => trip.id === selectedId) ?? null
 
-  const sorted = useMemo(
-    () =>
-      trips.slice().sort((a, b) => {
-        const byStatus = order[tripStatus(a.start, a.end)] - order[tripStatus(b.start, b.end)]
-        return byStatus !== 0 ? byStatus : a.start.localeCompare(b.start)
-      }),
-    [trips],
-  )
+  const sorted = useMemo(() => trips.slice().sort(compareTrips), [trips])
 
   const upsert = (trip: Trip) => {
     setTrips((prev) =>
