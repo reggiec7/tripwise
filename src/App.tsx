@@ -24,11 +24,18 @@ function App() {
   const selected = trips.find((trip) => trip.id === selectedId) ?? null
 
   const sorted = useMemo(
-    () =>
-      trips.slice().sort((a, b) => {
-        const byStatus = order[tripStatus(a.start, a.end)] - order[tripStatus(b.start, b.end)]
-        return byStatus !== 0 ? byStatus : a.start.localeCompare(b.start)
-      }),
+    () => {
+      const withStatus = trips.map((trip) => ({
+        trip,
+        status: order[tripStatus(trip.start, trip.end)],
+      }))
+      return withStatus
+        .sort((a, b) => {
+          const byStatus = a.status - b.status
+          return byStatus !== 0 ? byStatus : a.trip.start.localeCompare(b.trip.start)
+        })
+        .map(({ trip }) => trip)
+    },
     [trips],
   )
 
