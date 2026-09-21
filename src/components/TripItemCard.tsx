@@ -14,6 +14,25 @@ const icons = {
   activity: <Ticket />,
 }
 
+function formatItemDetails(item: TripItem) {
+  switch (item.kind) {
+    case 'flight':
+      return (
+        <>
+          {[item.airline, item.flightNumber].filter(Boolean).join(' ')}
+          {item.from && item.to ? ` · ${item.from} → ${item.to}` : ''}
+          {item.seat ? ` · seat ${item.seat}` : ''}
+        </>
+      )
+    case 'hotel':
+      return [item.address, item.roomType].filter(Boolean).join(' · ')
+    case 'activity':
+      return [item.location, item.category].filter(Boolean).join(' · ')
+    default:
+      return null
+  }
+}
+
 export const TripItemCard = ({ item, onEdit, onDelete }: Props) => {
   const isCancelled = item.status === 'cancelled'
   const badgeColor =
@@ -31,21 +50,9 @@ export const TripItemCard = ({ item, onEdit, onDelete }: Props) => {
             {formatDateTime(item.start)}
             {item.end ? ` → ${formatDateTime(item.end)}` : ''}
           </p>
-          {item.kind === 'flight' && (
+          {formatItemDetails(item) && (
             <p className="text-slate-400 text-sm m-0">
-              {[item.airline, item.flightNumber].filter(Boolean).join(' ')}
-              {item.from && item.to ? ` · ${item.from} → ${item.to}` : ''}
-              {item.seat ? ` · seat ${item.seat}` : ''}
-            </p>
-          )}
-          {item.kind === 'hotel' && (
-            <p className="text-slate-400 text-sm m-0">
-              {[item.address, item.roomType].filter(Boolean).join(' · ')}
-            </p>
-          )}
-          {item.kind === 'activity' && (
-            <p className="text-slate-400 text-sm m-0">
-              {[item.location, item.category].filter(Boolean).join(' · ')}
+              {formatItemDetails(item)}
             </p>
           )}
           {item.confirmation && <p className="text-slate-400 text-sm m-0">Conf # {item.confirmation}</p>}
