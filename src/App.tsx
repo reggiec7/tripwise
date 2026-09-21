@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { z } from 'zod'
 import './App.css'
-import type { Trip } from './types'
+import { tripSchema, type Trip } from './types'
 import { loadTrips, saveTrips } from './storage'
 import { tripStatus } from './format'
 import { TripForm } from './components/TripForm'
@@ -55,7 +56,9 @@ function App() {
   const importTrips = async (file: File) => {
     try {
       const parsed: unknown = JSON.parse(await file.text())
-      if (Array.isArray(parsed)) setTrips(parsed as Trip[])
+      const tripsArraySchema = z.array(tripSchema)
+      const validated = tripsArraySchema.parse(parsed)
+      setTrips(validated)
     } catch {
       alert('That file could not be read as TripWise data.')
     }
