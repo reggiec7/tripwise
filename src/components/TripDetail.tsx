@@ -37,7 +37,12 @@ export const TripDetail = ({ trip, onBack, onChange }: Props) => {
     const groups = new Map<string, TripItem[]>()
     for (const item of visible) {
       const key = dayKey(item.start)
-      groups.set(key, [...(groups.get(key) ?? []), item])
+      const existing = groups.get(key)
+      if (existing) {
+        existing.push(item)
+      } else {
+        groups.set(key, [item])
+      }
     }
     return [...groups.entries()]
   }, [visible])
