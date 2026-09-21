@@ -49,11 +49,11 @@ export const TripDetail = ({ trip, onBack, onChange }: Props) => {
   const countdown = daysUntil(trip.start)
 
   const upsert = (item: TripItem) => {
-    const exists = trip.items.some((existing) => existing.id === item.id)
+    const index = trip.items.findIndex((existing) => existing.id === item.id)
     onChange({
       ...trip,
-      items: exists
-        ? trip.items.map((existing) => (existing.id === item.id ? item : existing))
+      items: index !== -1
+        ? trip.items.with(index, item)
         : [...trip.items, item],
     })
     setAdding(null)
