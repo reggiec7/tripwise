@@ -7,6 +7,7 @@ import { TripForm } from './components/TripForm'
 import { TripDetail } from './components/TripDetail'
 import { TripCard } from './components/TripCard'
 import { Plus, Download, Upload } from 'lucide-react'
+import { tripsSchema } from './schema'
 
 const order = { active: 0, upcoming: 1, past: 2 }
 
@@ -55,7 +56,12 @@ function App() {
   const importTrips = async (file: File) => {
     try {
       const parsed: unknown = JSON.parse(await file.text())
-      if (Array.isArray(parsed)) setTrips(parsed as Trip[])
+      const result = tripsSchema.safeParse(parsed)
+      if (result.success) {
+        setTrips(result.data)
+      } else {
+        alert('That file could not be read as TripWise data.')
+      }
     } catch {
       alert('That file could not be read as TripWise data.')
     }

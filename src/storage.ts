@@ -1,4 +1,5 @@
 import type { Trip } from './types'
+import { tripsSchema } from './schema'
 
 const KEY = 'tripwise.trips.v1'
 
@@ -7,7 +8,8 @@ export const loadTrips = (): Trip[] => {
     const raw = localStorage.getItem(KEY)
     if (!raw) return []
     const parsed: unknown = JSON.parse(raw)
-    return Array.isArray(parsed) ? (parsed as Trip[]) : []
+    const result = tripsSchema.safeParse(parsed)
+    return result.success ? result.data : []
   } catch {
     return []
   }
