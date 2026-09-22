@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { ItemKind, Trip, TripItem } from '../types'
-import { dayKey, daysUntil, formatDay, formatMoney } from '../format'
+import { calculateSpent, dayKey, daysUntil, formatDay, formatMoney } from '../format'
 import { ItemForm } from './ItemForm'
 import { TripItemCard } from './TripItemCard'
 import { Plane, Hotel, Ticket, ArrowLeft, Plus } from 'lucide-react'
@@ -42,9 +42,7 @@ export const TripDetail = ({ trip, onBack, onChange }: Props) => {
     return [...groups.entries()]
   }, [visible])
 
-  const spent = trip.items
-    .filter((item) => item.status !== 'cancelled')
-    .reduce((sum, item) => sum + (item.cost || 0), 0)
+  const spent = calculateSpent(trip.items)
   const pending = trip.items.filter((item) => item.status === 'pending').length
   const countdown = daysUntil(trip.start)
 
