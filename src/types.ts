@@ -1,6 +1,57 @@
+import { z } from 'zod'
+
 export type ItemKind = 'flight' | 'hotel' | 'activity'
 
 export type BookingStatus = 'confirmed' | 'pending' | 'cancelled'
+
+const bookingStatusSchema = z.enum(['confirmed', 'pending', 'cancelled'])
+
+const baseItemSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  start: z.string(),
+  end: z.string(),
+  confirmation: z.string(),
+  cost: z.number(),
+  notes: z.string(),
+  status: bookingStatusSchema,
+})
+
+const flightSchema = baseItemSchema.extend({
+  kind: z.literal('flight'),
+  airline: z.string(),
+  flightNumber: z.string(),
+  from: z.string(),
+  to: z.string(),
+  seat: z.string(),
+})
+
+const hotelSchema = baseItemSchema.extend({
+  kind: z.literal('hotel'),
+  address: z.string(),
+  roomType: z.string(),
+})
+
+const activitySchema = baseItemSchema.extend({
+  kind: z.literal('activity'),
+  location: z.string(),
+  category: z.string(),
+})
+
+const tripItemSchema = z.discriminatedUnion('kind', [flightSchema, hotelSchema, activitySchema])
+
+export const tripSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  destination: z.string(),
+  start: z.string(),
+  end: z.string(),
+  travelers: z.string(),
+  budget: z.number(),
+  items: z.array(tripItemSchema),
+})
+
+export const tripsSchema = z.array(tripSchema)
 
 interface BaseItem {
   id: string
