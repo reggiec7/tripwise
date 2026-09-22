@@ -25,10 +25,16 @@ function App() {
 
   const sorted = useMemo(
     () =>
-      trips.slice().sort((a, b) => {
-        const byStatus = order[tripStatus(a.start, a.end)] - order[tripStatus(b.start, b.end)]
-        return byStatus !== 0 ? byStatus : a.start.localeCompare(b.start)
-      }),
+      trips
+        .map((trip) => ({
+          trip,
+          statusOrder: order[tripStatus(trip.start, trip.end)],
+        }))
+        .sort((a, b) => {
+          const byStatus = a.statusOrder - b.statusOrder
+          return byStatus !== 0 ? byStatus : a.trip.start.localeCompare(b.trip.start)
+        })
+        .map(({ trip }) => trip),
     [trips],
   )
 
