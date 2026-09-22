@@ -16,15 +16,22 @@ export const formatDateTime = (value: string): string => {
 
 export const dayKey = (value: string): string => (value ? value.slice(0, 10) : '')
 
+const dayFormatCache = new Map<string, string>()
+
 export const formatDay = (key: string): string => {
   if (!key) return 'Unscheduled'
+  if (dayFormatCache.has(key)) {
+    return dayFormatCache.get(key) as string
+  }
   const date = new Date(`${key}T12:00:00`)
   if (Number.isNaN(date.getTime())) return key
-  return date.toLocaleDateString(undefined, {
+  const formatted = date.toLocaleDateString(undefined, {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
   })
+  dayFormatCache.set(key, formatted)
+  return formatted
 }
 
 export const daysUntil = (value: string): number | null => {
