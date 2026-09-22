@@ -1,5 +1,5 @@
 import type { Trip } from '../types'
-import { daysUntil, formatMoney, tripStatus } from '../format'
+import { calculateSpent, daysUntil, formatMoney, tripStatus } from '../format'
 
 interface Props {
   trip: Trip
@@ -11,9 +11,7 @@ interface Props {
 export const TripCard = ({ trip, onOpen, onEdit, onDelete }: Props) => {
   const status = tripStatus(trip.start, trip.end)
   const countdown = daysUntil(trip.start)
-  const spent = trip.items
-    .filter((item) => item.status !== 'cancelled')
-    .reduce((sum, item) => sum + (item.cost || 0), 0)
+  const spent = calculateSpent(trip.items)
 
   const badgeColor =
     status === 'active' ? 'text-green-300 border-green-800' :

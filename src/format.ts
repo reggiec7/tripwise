@@ -1,5 +1,12 @@
+import type { TripItem } from './types'
+
 export const formatMoney = (value: number): string =>
   value.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+
+export const calculateSpent = (items: TripItem[]): number =>
+  items
+    .filter((item) => item.status !== 'cancelled')
+    .reduce((sum, item) => sum + (item.cost || 0), 0)
 
 export const formatDateTime = (value: string): string => {
   if (!value) return 'No date'
