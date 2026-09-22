@@ -42,10 +42,18 @@ export const TripDetail = ({ trip, onBack, onChange }: Props) => {
     return [...groups.entries()]
   }, [visible])
 
-  const spent = trip.items
-    .filter((item) => item.status !== 'cancelled')
-    .reduce((sum, item) => sum + (item.cost || 0), 0)
-  const pending = trip.items.filter((item) => item.status === 'pending').length
+  const { spent, pending, counts } = useMemo(() => {
+    return trip.items.reduce(
+      (acc, item) => {
+        if (item.status !== 'cancelled') acc.spent += item.cost || 0
+        if (item.status === 'pending') acc.pending++
+        acc.counts[item.kind]++
+        return acc
+      },
+      { spent: 0, pending: 0, counts: { flight: 0, hotel: 0, activity: 0 } as Record<ItemKind, number> }
+    )
+  }, [trip.items])
+
   const countdown = daysUntil(trip.start)
 
   const upsert = (item: TripItem) => {
@@ -103,7 +111,7 @@ export const TripDetail = ({ trip, onBack, onChange }: Props) => {
             <span className="text-slate-400 text-sm flex items-center gap-1.5 capitalize">
               {icons[kind]} {plural[kind]}
             </span>
-            <strong className="text-[1.4rem] leading-tight">{trip.items.filter((item) => item.kind === kind).length}</strong>
+            <strong className="text-[1.4rem] leading-tight">{counts[kind]}</strong>
           </div>
         ))}
       </div>
