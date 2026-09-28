@@ -26,6 +26,7 @@
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^5.1.0",
     "autoprefixer": "^10.6.0",
+    "jsdom": "^29.1.1",
     "oxlint": "^1.43.0",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
