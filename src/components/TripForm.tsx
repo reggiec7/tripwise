@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Trip } from '../types'
 import { emptyTrip } from '../types'
+import { labelClass, inputClass } from './formClasses'
 
 interface Props {
   trip?: Trip
@@ -13,9 +14,6 @@ export const TripForm = ({ trip, onSave, onCancel }: Props) => {
 
   const update = <K extends keyof Trip>(key: K, value: Trip[K]) =>
     setDraft((prev) => ({ ...prev, [key]: value }))
-
-  const labelClass = "flex flex-col gap-1 text-[0.8rem] text-slate-400 mb-2"
-  const inputClass = "bg-[#0b1220] border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-400 mt-1"
 
   return (
     <form
