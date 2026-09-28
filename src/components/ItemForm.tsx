@@ -1,6 +1,9 @@
 import { useState } from 'react'
-import type { BookingStatus, ItemKind, TripItem } from '../types'
+import type { BookingStatus, ItemKind, TripItem, Flight, Hotel, Activity } from '../types'
 import { emptyItem } from '../types'
+import { FlightFields } from './FlightFields'
+import { HotelFields } from './HotelFields'
+import { ActivityFields } from './ActivityFields'
 
 interface Props {
   kind: ItemKind
@@ -70,93 +73,15 @@ export const ItemForm = ({ kind, item, onSave, onCancel }: Props) => {
         </label>
 
         {draft.kind === 'flight' && (
-          <>
-            <label className={labelClass}>
-              Airline
-              <input
-                className={inputClass}
-                value={draft.airline}
-                onChange={(e) => update({ airline: e.target.value } as Partial<TripItem>)}
-              />
-            </label>
-            <label className={labelClass}>
-              Flight #
-              <input
-                className={inputClass}
-                value={draft.flightNumber}
-                onChange={(e) => update({ flightNumber: e.target.value } as Partial<TripItem>)}
-              />
-            </label>
-            <label className={labelClass}>
-              From
-              <input
-                className={inputClass}
-                value={draft.from}
-                placeholder="JFK"
-                onChange={(e) => update({ from: e.target.value } as Partial<TripItem>)}
-              />
-            </label>
-            <label className={labelClass}>
-              To
-              <input
-                className={inputClass}
-                value={draft.to}
-                placeholder="OGG"
-                onChange={(e) => update({ to: e.target.value } as Partial<TripItem>)}
-              />
-            </label>
-            <label className={labelClass}>
-              Seat
-              <input
-                className={inputClass}
-                value={draft.seat}
-                onChange={(e) => update({ seat: e.target.value } as Partial<TripItem>)}
-              />
-            </label>
-          </>
+          <FlightFields draft={draft as Flight} update={update} labelClass={labelClass} inputClass={inputClass} />
         )}
 
         {draft.kind === 'hotel' && (
-          <>
-            <label className={labelClass}>
-              Address
-              <input
-                className={inputClass}
-                value={draft.address}
-                onChange={(e) => update({ address: e.target.value } as Partial<TripItem>)}
-              />
-            </label>
-            <label className={labelClass}>
-              Room type
-              <input
-                className={inputClass}
-                value={draft.roomType}
-                onChange={(e) => update({ roomType: e.target.value } as Partial<TripItem>)}
-              />
-            </label>
-          </>
+          <HotelFields draft={draft as Hotel} update={update} labelClass={labelClass} inputClass={inputClass} />
         )}
 
         {draft.kind === 'activity' && (
-          <>
-            <label className={labelClass}>
-              Location
-              <input
-                className={inputClass}
-                value={draft.location}
-                onChange={(e) => update({ location: e.target.value } as Partial<TripItem>)}
-              />
-            </label>
-            <label className={labelClass}>
-              Category
-              <input
-                className={inputClass}
-                value={draft.category}
-                placeholder="Dinner, tour, spa…"
-                onChange={(e) => update({ category: e.target.value } as Partial<TripItem>)}
-              />
-            </label>
-          </>
+          <ActivityFields draft={draft as Activity} update={update} labelClass={labelClass} inputClass={inputClass} />
         )}
 
         <label className={labelClass}>
