@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { BookingStatus, ItemKind, TripItem } from '../types'
 import { emptyItem } from '../types'
+import { labelClass, inputClass } from './formClasses'
 
 interface Props {
   kind: ItemKind
@@ -21,9 +22,6 @@ export const ItemForm = ({ kind, item, onSave, onCancel }: Props) => {
 
   const update = (patch: Partial<TripItem>) =>
     setDraft((prev) => ({ ...prev, ...patch }) as TripItem)
-
-  const labelClass = "flex flex-col gap-1 text-[0.8rem] text-slate-400 mb-2"
-  const inputClass = "bg-[#0b1220] border border-slate-700 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-sky-400 mt-1"
 
   return (
     <form
